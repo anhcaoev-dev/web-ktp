@@ -1,6 +1,5 @@
 {
   "buildCommand": "npm run build",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "outputDirectory": "."
+  "installCommand": "npm install --prefer-offline",
+  "framework": "nextjs"
 }
