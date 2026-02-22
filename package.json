@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "create-admin": "node scripts/create-admin-user.js"
+    "create-admin": "node scripts/create-admin-user.js",
+    "vercel-build": "next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
