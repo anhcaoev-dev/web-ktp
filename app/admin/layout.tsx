@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { LogOut, Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import { DEFAULT_COMPANY_INFO, type CompanyInfo } from '@/lib/company-info'
 
 export default function AdminLayout({
   children,
@@ -17,6 +18,7 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [mounted, setMounted] = useState(false)
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null)
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(DEFAULT_COMPANY_INFO)
 
   // Menu items
   const menuItems = [
@@ -78,6 +80,14 @@ export default function AdminLayout({
     }
   }, [pathname, menuItems])
 
+  // Fetch company info for admin sidebar logo
+  useEffect(() => {
+    fetch('/api/company-info')
+      .then(res => res.json())
+      .then(data => setCompanyInfo(data))
+      .catch(console.error)
+  }, [])
+
   const handleLogout = () => {
     localStorage.removeItem('admin_user')
     localStorage.removeItem('admin_token')
@@ -114,9 +124,8 @@ export default function AdminLayout({
         <div key={item.label}>
           <button
             onClick={() => setOpenSubmenu(isOpen ? null : item.label)}
-            className={`flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left transition-colors ${
-              isActive ? 'bg-muted text-primary' : 'text-foreground hover:bg-muted'
-            }`}
+            className={`flex w-full items-center gap-3 rounded-lg px-4 py-2 text-left transition-colors ${isActive ? 'bg-muted text-primary' : 'text-foreground hover:bg-muted'
+              }`}
           >
             <span className="text-xl">{item.icon}</span>
             {sidebarOpen && <span className="flex-1 text-sm font-medium">{item.label}</span>}
@@ -137,11 +146,10 @@ export default function AdminLayout({
                 <Link
                   key={subItem.href}
                   href={subItem.href}
-                  className={`block rounded-lg px-4 py-2 text-sm transition-colors ${
-                    pathname === subItem.href
+                  className={`block rounded-lg px-4 py-2 text-sm transition-colors ${pathname === subItem.href
                       ? 'bg-primary text-primary-foreground'
                       : 'text-foreground hover:bg-muted'
-                  }`}
+                    }`}
                 >
                   {subItem.label}
                 </Link>
@@ -156,9 +164,8 @@ export default function AdminLayout({
       <Link
         key={item.href}
         href={item.href}
-        className={`flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${
-          pathname === item.href ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'
-        }`}
+        className={`flex items-center gap-3 rounded-lg px-4 py-2 transition-colors ${pathname === item.href ? 'bg-primary text-primary-foreground' : 'text-foreground hover:bg-muted'
+          }`}
         title={!sidebarOpen ? item.label : ''}
       >
         <span className="text-xl">{item.icon}</span>
@@ -170,18 +177,27 @@ export default function AdminLayout({
   return (
     <div className="flex h-screen bg-background">
       <div
-        className={`${
-          sidebarOpen ? 'w-64' : 'w-20'
-        } flex flex-col border-r border-border bg-card transition-all duration-300`}
+        className={`${sidebarOpen ? 'w-64' : 'w-20'
+          } flex flex-col border-r border-border bg-card transition-all duration-300`}
       >
         <div className="border-b border-border p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 font-bold text-primary">
-              KB
-            </div>
+            {companyInfo.logo_url ? (
+              <img
+                src={companyInfo.logo_url}
+                alt={companyInfo.company_name}
+                className="h-10 w-10 shrink-0 rounded-lg object-contain bg-white p-0.5 border border-border"
+              />
+            ) : (
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 font-bold text-primary text-xs">
+                {companyInfo.logo_text || companyInfo.short_name}
+              </div>
+            )}
             {sidebarOpen && (
-              <div className="flex-1">
-                <p className="text-sm font-bold text-foreground">Kim Thanh Phat</p>
+              <div className="flex-1 overflow-hidden">
+                <p className="text-sm font-bold text-foreground truncate" title={companyInfo.company_name}>
+                  {companyInfo.company_name}
+                </p>
                 <p className="text-xs text-muted-foreground">Trang quản trị</p>
               </div>
             )}
