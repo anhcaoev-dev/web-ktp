@@ -48,7 +48,7 @@ export function Header() {
               <img
                 src={companyInfo.logo_url}
                 alt={companyInfo.company_name}
-                className="h-10 w-10 rounded-lg object-cover border border-border"
+                className="h-10 w-auto max-w-[150px] rounded-lg object-contain p-0.5 bg-white"
               />
             ) : (
               <div className="h-10 w-10 rounded-lg bg-primary flex items-center justify-center">

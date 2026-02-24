@@ -61,6 +61,9 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error('Error uploading image:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Internal server error (Unhandled during upload)' },
+      { status: 500 }
+    )
   }
 }
