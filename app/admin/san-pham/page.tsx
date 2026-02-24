@@ -34,7 +34,6 @@ export default function ProductsAdminPage() {
     price: '',
     is_featured: false,
     image_url: '',
-    image_alt: '',
   })
   const [uploadingImage, setUploadingImage] = useState(false)
   const [localPreview, setLocalPreview] = useState<string | null>(null)
@@ -79,18 +78,14 @@ export default function ProductsAdminPage() {
       })
 
       if (response.ok) {
-        setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '', image_alt: '' })
+        setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '' })
         setEditingId(null)
         setLocalPreview(null)
         setShowForm(false)
         fetchProducts()
       } else {
         const err = await response.json()
-        if (err.message && err.message.includes('image_alt')) {
-          alert('Lỗi: Cột "image_alt" chưa được thêm vào bảng "products" trên Supabase. Vui lòng vào Supabase SQL Editor và chạy: ALTER TABLE products ADD COLUMN image_alt text;')
-        } else {
-          alert('Lỗi lưu sản phẩm: ' + (err.error || err.message))
-        }
+        alert('Lỗi lưu sản phẩm: ' + (err.error || err.message))
       }
     } catch (error) {
       console.error('Error saving product:', error)
@@ -156,7 +151,6 @@ export default function ProductsAdminPage() {
       price: product.price.toString(),
       is_featured: product.is_featured,
       image_url: product.image_url || '',
-      image_alt: (product as any).image_alt || '',
     })
     setEditingId(product.id)
     setLocalPreview(null)
@@ -252,15 +246,6 @@ export default function ProductsAdminPage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Thẻ Alt Hình Ảnh (Mô tả ảnh cho SEO)</Label>
-                  <Input
-                    value={formData.image_alt}
-                    onChange={(e) => setFormData({ ...formData, image_alt: e.target.value })}
-                    placeholder="VD: Hình ảnh thùng carton 5 lớp in offset"
-                  />
-                </div>
-
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="is_featured"
@@ -287,7 +272,7 @@ export default function ProductsAdminPage() {
                       setShowForm(false)
                       setEditingId(null)
                       setLocalPreview(null)
-                      setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '', image_alt: '' })
+                      setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '' })
                     }}
                   >
                     Hủy

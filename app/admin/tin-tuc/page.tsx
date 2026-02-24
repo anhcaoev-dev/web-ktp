@@ -40,7 +40,6 @@ export default function NewsAdminPage() {
     featured: false,
     status: 'draft',
     image_url: '',
-    image_alt: '',
   })
   const [uploadingImage, setUploadingImage] = useState(false)
   const [localPreview, setLocalPreview] = useState<string | null>(null)
@@ -104,7 +103,6 @@ export default function NewsAdminPage() {
           featured: false,
           status: 'draft',
           image_url: '',
-          image_alt: '',
         })
         setEditingId(null)
         setLocalPreview(null)
@@ -112,11 +110,7 @@ export default function NewsAdminPage() {
         fetchArticles()
       } else {
         const err = await response.json()
-        if (err.message && err.message.includes('image_alt')) {
-          alert('Lỗi: Cột "image_alt" chưa được thêm vào bảng "news_articles" trên Supabase. Vui lòng vào Supabase SQL Editor và chạy: ALTER TABLE news_articles ADD COLUMN image_alt text;')
-        } else {
-          alert('Lỗi lưu bài viết: ' + (err.error || err.message))
-        }
+        alert('Lỗi lưu bài viết: ' + (err.error || err.message))
       }
     } catch (error) {
       console.error('Error saving article:', error)
@@ -184,7 +178,6 @@ export default function NewsAdminPage() {
       featured: article.featured,
       status: article.status,
       image_url: article.image_url || '',
-      image_alt: (article as any).image_alt || '',
     })
     setEditingId(article.id)
     setLocalPreview(null)
@@ -211,7 +204,6 @@ export default function NewsAdminPage() {
               featured: false,
               status: 'draft',
               image_url: '',
-              image_alt: '',
             })
           }}
           className="bg-primary hover:bg-primary/90"
@@ -317,15 +309,6 @@ export default function NewsAdminPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Thẻ Alt Hình Ảnh (Mô tả ảnh cho SEO)</Label>
-                  <Input
-                    value={formData.image_alt}
-                    onChange={(e) => setFormData({ ...formData, image_alt: e.target.value })}
-                    placeholder="VD: Hướng dẫn đóng gói bao bì chống sốc"
-                  />
-                </div>
-
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     checked={formData.featured}
@@ -358,7 +341,6 @@ export default function NewsAdminPage() {
                         featured: false,
                         status: 'draft',
                         image_url: '',
-                        image_alt: '',
                       })
                     }}
                   >
