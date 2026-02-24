@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { Building2, Save } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -13,6 +14,7 @@ export default function CompanyInfoAdminPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState<CompanyInfo>(DEFAULT_COMPANY_INFO)
 
@@ -76,6 +78,37 @@ export default function CompanyInfoAdminPage() {
 
   const updateField = (field: keyof CompanyInfo, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const uploadImage = async (file: File) => {
+    try {
+      setUploadingImage(true)
+      setError('')
+
+      const token = localStorage.getItem('admin_token')
+      const body = new FormData()
+      body.set('file', file)
+      body.set('folder', 'company')
+
+      const response = await fetch('/api/admin/upload-anh', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Không thể tải ảnh lên')
+      }
+
+      const data = await response.json()
+      updateField('logo_url', data.url)
+    } catch (err) {
+      console.error(err)
+      setError(err instanceof Error ? err.message : 'Không thể tải ảnh lên')
+    } finally {
+      setUploadingImage(false)
+    }
   }
 
   if (loading) {
@@ -184,12 +217,24 @@ export default function CompanyInfoAdminPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Logo URL</Label>
+              <Label>Logo (Upload từ máy tính)</Label>
+              {formData.logo_url && (
+                <div className="relative h-20 w-40 overflow-hidden rounded-md border bg-white mb-2">
+                  <Image src={formData.logo_url} alt="Logo preview" fill className="object-contain p-2" />
+                </div>
+              )}
               <Input
-                value={formData.logo_url}
-                onChange={(e) => updateField('logo_url', e.target.value)}
-                placeholder="https://..."
+                type="file"
+                accept="image/*"
+                onChange={(event) => {
+                  const file = event.target.files?.[0]
+                  if (file) uploadImage(file)
+                }}
+                disabled={uploadingImage}
               />
+              <p className="text-xs text-muted-foreground">
+                {uploadingImage ? 'Đang upload...' : 'Ảnh logo sẽ được lưu trực tiếp trên hệ thống'}
+              </p>
             </div>
             <div className="space-y-2">
               <Label>Text logo dự phòng</Label>
