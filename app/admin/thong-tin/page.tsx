@@ -219,8 +219,8 @@ export default function CompanyInfoAdminPage() {
             <div className="space-y-2">
               <Label>Logo (Upload từ máy tính)</Label>
               {formData.logo_url && (
-                <div className="relative h-20 w-40 overflow-hidden rounded-md border bg-white mb-2">
-                  <Image src={formData.logo_url} alt="Logo preview" fill className="object-contain p-2" />
+                <div className="relative h-24 w-48 overflow-hidden rounded-md border bg-slate-100 dark:bg-slate-800 flex items-center justify-center p-2 mb-2">
+                  <img src={formData.logo_url} alt="Logo preview" className="max-w-full max-h-full object-contain" />
                 </div>
               )}
               <Input
