@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { RichTextEditor } from '@/components/rich-text-editor'
 import { Trash2, Edit2, Plus } from 'lucide-react'
+import { SeoChecklist } from '@/components/seo-checklist'
 
 interface Article {
   id: string
@@ -177,120 +178,135 @@ export default function NewsAdminPage() {
           <CardHeader>
             <CardTitle>{editingId ? 'Chỉnh Sửa Bài Viết' : 'Viết Bài Viết Mới'}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Tiêu Đề</Label>
-              <Input
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Tiêu đề bài viết"
-              />
-            </div>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-4">
+                <div className="space-y-2">
+                  <Label>Tiêu Đề</Label>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    placeholder="Tiêu đề bài viết"
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label>Tóm Tắt</Label>
-              <Textarea
-                value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                placeholder="Tóm tắt ngắn gọn cho trang danh sách"
-                rows={2}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label>Tóm Tắt</Label>
+                  <Textarea
+                    value={formData.excerpt}
+                    onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                    placeholder="Tóm tắt ngắn gọn cho trang danh sách"
+                    rows={2}
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label>Nội Dung</Label>
-              <RichTextEditor
-                value={formData.content}
-                onChange={(content) => setFormData({ ...formData, content })}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label>Nội Dung</Label>
+                  <RichTextEditor
+                    value={formData.content}
+                    onChange={(content) => setFormData({ ...formData, content })}
+                  />
+                </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Danh Mục</Label>
-                <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="tin_tuc">Tin Tức</SelectItem>
-                    <SelectItem value="kien_thuc">Kiến Thức</SelectItem>
-                    <SelectItem value="huong_dan">Hướng Dẫn</SelectItem>
-                    <SelectItem value="truong_hop">Trường Hợp</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Danh Mục</Label>
+                    <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="tin_tuc">Tin Tức</SelectItem>
+                        <SelectItem value="kien_thuc">Kiến Thức</SelectItem>
+                        <SelectItem value="huong_dan">Hướng Dẫn</SelectItem>
+                        <SelectItem value="truong_hop">Trường Hợp</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Tác Giả</Label>
+                    <Input
+                      value={formData.author}
+                      onChange={(e) => setFormData({ ...formData, author: e.target.value })}
+                      placeholder="Tên tác giả"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Trạng Thái</Label>
+                    <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">Bản Nháp</SelectItem>
+                        <SelectItem value="published">Xuất Bản</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>URL Hình Ảnh</Label>
+                    <Input
+                      value={formData.image_url}
+                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={formData.featured}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, featured: checked as boolean })
+                    }
+                    id="featured"
+                  />
+                  <Label htmlFor="featured" className="font-normal cursor-pointer">
+                    Đánh dấu là bài viết nổi bật
+                  </Label>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
+                    {editingId ? 'Cập Nhật' : 'Lưu'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowForm(false)
+                      setEditingId(null)
+                      setFormData({
+                        title: '',
+                        excerpt: '',
+                        content: '',
+                        category: 'tin_tuc',
+                        author: '',
+                        featured: false,
+                        status: 'draft',
+                        image_url: '',
+                      })
+                    }}
+                  >
+                    Hủy
+                  </Button>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Tác Giả</Label>
-                <Input
-                  value={formData.author}
-                  onChange={(e) => setFormData({ ...formData, author: e.target.value })}
-                  placeholder="Tên tác giả"
+              {/* Cột hiển thị bảng xếp hạng SEO bài viết */}
+              <div className="space-y-4">
+                <SeoChecklist
+                  title={formData.title}
+                  description={formData.excerpt}
+                  content={formData.content}
+                  hasImage={!!formData.image_url}
+                  type="article"
                 />
               </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Trạng Thái</Label>
-                <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">Bản Nháp</SelectItem>
-                    <SelectItem value="published">Xuất Bản</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label>URL Hình Ảnh</Label>
-                <Input
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                checked={formData.featured}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, featured: checked as boolean })
-                }
-                id="featured"
-              />
-              <Label htmlFor="featured" className="font-normal cursor-pointer">
-                Đánh dấu là bài viết nổi bật
-              </Label>
-            </div>
-
-            <div className="flex gap-2">
-              <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
-                {editingId ? 'Cập Nhật' : 'Lưu'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowForm(false)
-                  setEditingId(null)
-                  setFormData({
-                    title: '',
-                    excerpt: '',
-                    content: '',
-                    category: 'tin_tuc',
-                    author: '',
-                    featured: false,
-                    status: 'draft',
-                    image_url: '',
-                  })
-                }}
-              >
-                Hủy
-              </Button>
             </div>
           </CardContent>
         </Card>

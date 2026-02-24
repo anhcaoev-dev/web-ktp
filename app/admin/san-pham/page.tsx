@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { RichTextEditor } from '@/components/rich-text-editor'
 import { Trash2, Edit2, Plus, Settings } from 'lucide-react'
 import Link from 'next/link'
+import { SeoChecklist } from '@/components/seo-checklist'
 
 interface Product {
   id: string
@@ -141,87 +142,101 @@ export default function ProductsAdminPage() {
           <CardHeader>
             <CardTitle>{editingId ? 'Chỉnh Sửa Sản Phẩm' : 'Thêm Sản Phẩm Mới'}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Tên Sản Phẩm</Label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Thùng Carton Tiêu Chuẩn"
-              />
-            </div>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-4">
+                <div className="space-y-2">
+                  <Label>Tên Sản Phẩm</Label>
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    placeholder="Thùng Carton Tiêu Chuẩn"
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label>Danh Mục</Label>
-              <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tiêu_chuẩn">Tiêu Chuẩn</SelectItem>
-                  <SelectItem value="có_lót">Có Lót</SelectItem>
-                  <SelectItem value="chuyên_dụng">Chuyên Dụng</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <div className="space-y-2">
+                  <Label>Danh Mục</Label>
+                  <Select value={formData.category} onValueChange={(v) => setFormData({ ...formData, category: v })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="tiêu_chuẩn">Tiêu Chuẩn</SelectItem>
+                      <SelectItem value="có_lót">Có Lót</SelectItem>
+                      <SelectItem value="chuyên_dụng">Chuyên Dụng</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="space-y-2">
-              <Label>Mô Tả</Label>
-              <RichTextEditor
-                value={formData.description}
-                onChange={(content) => setFormData({ ...formData, description: content })}
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label>Mô Tả</Label>
+                  <RichTextEditor
+                    value={formData.description}
+                    onChange={(content) => setFormData({ ...formData, description: content })}
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label>Giá (đồng)</Label>
-              <Input
-                type="number"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                placeholder="2500"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label>Giá (đồng)</Label>
+                  <Input
+                    type="number"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    placeholder="2500"
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label>URL Hình Ảnh</Label>
-              <Input
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
+                <div className="space-y-2">
+                  <Label>URL Hình Ảnh</Label>
+                  <Input
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
 
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="is_featured"
-                checked={formData.is_featured}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, is_featured: Boolean(checked) })
-                }
-              />
-              <label
-                htmlFor="is_featured"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Hiển thị trên trang chủ
-              </label>
-            </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="is_featured"
+                    checked={formData.is_featured}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, is_featured: Boolean(checked) })
+                    }
+                  />
+                  <label
+                    htmlFor="is_featured"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Hiển thị trên trang chủ
+                  </label>
+                </div>
 
-            <div className="flex gap-2">
-              <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
-                {editingId ? 'Cập Nhật' : 'Lưu'}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowForm(false)
-                  setEditingId(null)
-                  setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '' })
-                }}
-              >
-                Hủy
-              </Button>
+                <div className="flex gap-2">
+                  <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
+                    {editingId ? 'Cập Nhật' : 'Lưu'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowForm(false)
+                      setEditingId(null)
+                      setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '' })
+                    }}
+                  >
+                    Hủy
+                  </Button>
+                </div>
+              </div>
+
+              {/* Cột hiển thị bảng xếp hạng SEO */}
+              <div className="space-y-4">
+                <SeoChecklist
+                  title={formData.name}
+                  content={formData.description}
+                  hasImage={!!formData.image_url}
+                  type="product"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>
