@@ -15,6 +15,7 @@ export default function CompanyInfoAdminPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [localPreview, setLocalPreview] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState<CompanyInfo>(DEFAULT_COMPANY_INFO)
 
@@ -82,6 +83,9 @@ export default function CompanyInfoAdminPage() {
 
   const uploadImage = async (file: File) => {
     try {
+      const objectUrl = URL.createObjectURL(file)
+      setLocalPreview(objectUrl)
+
       setUploadingImage(true)
       setError('')
 
@@ -106,6 +110,7 @@ export default function CompanyInfoAdminPage() {
     } catch (err) {
       console.error(err)
       setError(err instanceof Error ? err.message : 'Không thể tải ảnh lên')
+      setLocalPreview(null)
     } finally {
       setUploadingImage(false)
     }
@@ -218,9 +223,9 @@ export default function CompanyInfoAdminPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label>Logo (Upload từ máy tính)</Label>
-              {formData.logo_url && (
+              {(localPreview || formData.logo_url) && (
                 <div className="relative h-24 w-48 overflow-hidden rounded-md border bg-slate-100 dark:bg-slate-800 flex items-center justify-center p-2 mb-2">
-                  <img src={formData.logo_url} alt="Logo preview" className="max-w-full max-h-full object-contain" />
+                  <img src={localPreview || formData.logo_url} alt="Logo preview" className="max-w-full max-h-full object-contain bg-transparent" />
                 </div>
               )}
               <Input
@@ -228,7 +233,9 @@ export default function CompanyInfoAdminPage() {
                 accept="image/*"
                 onChange={(event) => {
                   const file = event.target.files?.[0]
-                  if (file) uploadImage(file)
+                  if (file) {
+                    uploadImage(file)
+                  }
                 }}
                 disabled={uploadingImage}
               />
