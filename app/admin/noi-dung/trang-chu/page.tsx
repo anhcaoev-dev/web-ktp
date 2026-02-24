@@ -282,16 +282,25 @@ export default function HomeContentAdminPage() {
       }
 
       const data = (await response.json()) as { url: string }
-      
+
       if (arrayIndex !== undefined) {
         // Update array field
-        const currentImages = [...formData.factory_images]
-        currentImages[arrayIndex] = data.url
-        updateField('factory_images', currentImages)
+        if (fieldName.startsWith('customer_')) {
+          setFormData((prev) => ({
+            ...prev,
+            customers: prev.customers.map((item, idx) =>
+              idx === arrayIndex ? { ...item, logo_url: data.url } : item
+            ),
+          }))
+        } else if (fieldName === 'factory_images') {
+          const currentImages = [...formData.factory_images]
+          currentImages[arrayIndex] = data.url
+          updateField('factory_images', currentImages)
+        }
       } else {
         updateField(fieldName as keyof HomePageContent, data.url as HomePageContent[keyof HomePageContent])
       }
-      
+
       setTimedSuccess('Tải ảnh thành công, hãy lưu bản nháp để ghi vào DB')
     } catch (uploadError) {
       console.error(uploadError)
@@ -365,15 +374,12 @@ export default function HomeContentAdminPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>URL hình hero</Label>
-                <Input
-                  value={formData.hero_image_url}
-                  onChange={(event) => updateField('hero_image_url', event.target.value)}
-                  placeholder="https://..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Upload ảnh hero</Label>
+                <Label>Hình ảnh hero (Upload từ máy tính)</Label>
+                {formData.hero_image_url && (
+                  <div className="relative h-48 w-full overflow-hidden rounded-md border">
+                    <Image src={formData.hero_image_url} alt="Hero preview" fill className="object-cover" />
+                  </div>
+                )}
                 <Input
                   type="file"
                   accept="image/*"
@@ -384,7 +390,7 @@ export default function HomeContentAdminPage() {
                   disabled={uploadingImage}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {uploadingImage ? 'Đang upload...' : 'Ảnh được lưu trên Supabase Storage bucket website-assets'}
+                  {uploadingImage ? 'Đang upload...' : 'Tải lên ảnh từ thiết bị của bạn (Ảnh được lưu tự động trên hệ thống)'}
                 </p>
               </div>
               <div className="space-y-2">
@@ -468,7 +474,7 @@ export default function HomeContentAdminPage() {
                 <div className="grid grid-cols-2 gap-4">
                   {formData.factory_images.map((img, index) => (
                     <div key={`factory-${index}`} className="space-y-2">
-                      <div className="relative h-32 overflow-hidden rounded-md border">
+                      <div className="relative h-32 w-full overflow-hidden rounded-md border">
                         {img ? (
                           <Image src={img} alt={`Xưởng ${index + 1}`} fill className="object-cover" />
                         ) : (
@@ -478,15 +484,6 @@ export default function HomeContentAdminPage() {
                         )}
                       </div>
                       <Input
-                        value={img}
-                        onChange={(event) => {
-                          const newImages = [...formData.factory_images]
-                          newImages[index] = event.target.value
-                          updateField('factory_images', newImages)
-                        }}
-                        placeholder="URL hình ảnh"
-                      />
-                      <Input
                         type="file"
                         accept="image/*"
                         onChange={(event) => {
@@ -494,7 +491,7 @@ export default function HomeContentAdminPage() {
                           if (file) uploadImage(file, 'factory_images', index)
                         }}
                         disabled={uploadingImage}
-                        className="text-xs"
+                        className="text-xs mt-2"
                       />
                     </div>
                   ))}
@@ -578,8 +575,8 @@ export default function HomeContentAdminPage() {
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                     <div className="space-y-2">
                       <Label>Icon</Label>
-                      <Select 
-                        value={item.icon} 
+                      <Select
+                        value={item.icon}
                         onValueChange={(value) => updateProcessStep(index, { icon: value as HomeProcessStep['icon'] })}
                       >
                         <SelectTrigger>
@@ -641,14 +638,12 @@ export default function HomeContentAdminPage() {
                       />
                     </div>
                     <div className="mt-2 space-y-2">
-                      <Label>Logo URL</Label>
-                      <Input
-                        value={customer.logo_url}
-                        onChange={(event) => updateCustomer(index, { logo_url: event.target.value })}
-                        placeholder="URL logo"
-                      />
-                    </div>
-                    <div className="mt-2">
+                      <Label>Logo (Upload từ máy tính)</Label>
+                      {customer.logo_url && (
+                        <div className="relative h-16 w-32 overflow-hidden rounded-md border bg-white">
+                          <Image src={customer.logo_url} alt="Logo preview" fill className="object-contain p-1" />
+                        </div>
+                      )}
                       <Input
                         type="file"
                         accept="image/*"
