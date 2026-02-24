@@ -40,7 +40,10 @@ export default function NewsAdminPage() {
     featured: false,
     status: 'draft',
     image_url: '',
+    image_alt: '',
   })
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [localPreview, setLocalPreview] = useState<string | null>(null)
 
   useEffect(() => {
     fetchArticles()
@@ -101,13 +104,55 @@ export default function NewsAdminPage() {
           featured: false,
           status: 'draft',
           image_url: '',
+          image_alt: '',
         })
         setEditingId(null)
+        setLocalPreview(null)
         setShowForm(false)
         fetchArticles()
+      } else {
+        const err = await response.json()
+        if (err.message && err.message.includes('image_alt')) {
+          alert('Lỗi: Cột "image_alt" chưa được thêm vào bảng "news_articles" trên Supabase. Vui lòng vào Supabase SQL Editor và chạy: ALTER TABLE news_articles ADD COLUMN image_alt text;')
+        } else {
+          alert('Lỗi lưu bài viết: ' + (err.error || err.message))
+        }
       }
     } catch (error) {
       console.error('Error saving article:', error)
+    }
+  }
+
+  const uploadCoverImage = async (file: File) => {
+    try {
+      const objectUrl = URL.createObjectURL(file)
+      setLocalPreview(objectUrl)
+
+      setUploadingImage(true)
+
+      const token = localStorage.getItem('admin_token')
+      const body = new FormData()
+      body.set('file', file)
+      body.set('folder', 'news')
+
+      const response = await fetch('/api/admin/upload-anh', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Không thể tải ảnh lên')
+      }
+
+      const data = await response.json()
+      setFormData(prev => ({ ...prev, image_url: data.url }))
+    } catch (err) {
+      console.error(err)
+      alert(err instanceof Error ? err.message : 'Lỗi upload ảnh')
+    } finally {
+      setUploadingImage(false)
     }
   }
 
@@ -139,8 +184,10 @@ export default function NewsAdminPage() {
       featured: article.featured,
       status: article.status,
       image_url: article.image_url || '',
+      image_alt: (article as any).image_alt || '',
     })
     setEditingId(article.id)
+    setLocalPreview(null)
     setShowForm(true)
   }
 
@@ -164,6 +211,7 @@ export default function NewsAdminPage() {
               featured: false,
               status: 'draft',
               image_url: '',
+              image_alt: '',
             })
           }}
           className="bg-primary hover:bg-primary/90"
@@ -249,13 +297,33 @@ export default function NewsAdminPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>URL Hình Ảnh</Label>
+                    <Label>Hình Ảnh Đại Diện (Upload từ máy tính)</Label>
+                    {(localPreview || formData.image_url) && (
+                      <div className="relative h-32 w-32 overflow-hidden rounded-md border bg-slate-100 dark:bg-slate-800 flex items-center justify-center p-2 mb-2">
+                        <img src={localPreview || formData.image_url} alt="Cover preview" className="max-w-full max-h-full object-contain" />
+                      </div>
+                    )}
                     <Input
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      placeholder="https://example.com/image.jpg"
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0]
+                        if (file) {
+                          uploadCoverImage(file)
+                        }
+                      }}
+                      disabled={uploadingImage}
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Thẻ Alt Hình Ảnh (Mô tả ảnh cho SEO)</Label>
+                  <Input
+                    value={formData.image_alt}
+                    onChange={(e) => setFormData({ ...formData, image_alt: e.target.value })}
+                    placeholder="VD: Hướng dẫn đóng gói bao bì chống sốc"
+                  />
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -280,6 +348,7 @@ export default function NewsAdminPage() {
                     onClick={() => {
                       setShowForm(false)
                       setEditingId(null)
+                      setLocalPreview(null)
                       setFormData({
                         title: '',
                         excerpt: '',
@@ -289,6 +358,7 @@ export default function NewsAdminPage() {
                         featured: false,
                         status: 'draft',
                         image_url: '',
+                        image_alt: '',
                       })
                     }}
                   >
@@ -425,8 +495,9 @@ export default function NewsAdminPage() {
             </Card>
           )}
         </>
-      )}
-    </div>
+      )
+      }
+    </div >
   )
 }
 

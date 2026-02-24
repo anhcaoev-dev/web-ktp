@@ -34,7 +34,10 @@ export default function ProductsAdminPage() {
     price: '',
     is_featured: false,
     image_url: '',
+    image_alt: '',
   })
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const [localPreview, setLocalPreview] = useState<string | null>(null)
 
   useEffect(() => {
     fetchProducts()
@@ -76,13 +79,54 @@ export default function ProductsAdminPage() {
       })
 
       if (response.ok) {
-        setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '' })
+        setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '', image_alt: '' })
         setEditingId(null)
+        setLocalPreview(null)
         setShowForm(false)
         fetchProducts()
+      } else {
+        const err = await response.json()
+        if (err.message && err.message.includes('image_alt')) {
+          alert('Lỗi: Cột "image_alt" chưa được thêm vào bảng "products" trên Supabase. Vui lòng vào Supabase SQL Editor và chạy: ALTER TABLE products ADD COLUMN image_alt text;')
+        } else {
+          alert('Lỗi lưu sản phẩm: ' + (err.error || err.message))
+        }
       }
     } catch (error) {
       console.error('Error saving product:', error)
+    }
+  }
+
+  const uploadCoverImage = async (file: File) => {
+    try {
+      const objectUrl = URL.createObjectURL(file)
+      setLocalPreview(objectUrl)
+
+      setUploadingImage(true)
+
+      const token = localStorage.getItem('admin_token')
+      const body = new FormData()
+      body.set('file', file)
+      body.set('folder', 'products')
+
+      const response = await fetch('/api/admin/upload-anh', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body,
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Không thể tải ảnh lên')
+      }
+
+      const data = await response.json()
+      setFormData(prev => ({ ...prev, image_url: data.url }))
+    } catch (err) {
+      console.error(err)
+      alert(err instanceof Error ? err.message : 'Lỗi upload ảnh')
+    } finally {
+      setUploadingImage(false)
     }
   }
 
@@ -112,8 +156,10 @@ export default function ProductsAdminPage() {
       price: product.price.toString(),
       is_featured: product.is_featured,
       image_url: product.image_url || '',
+      image_alt: (product as any).image_alt || '',
     })
     setEditingId(product.id)
+    setLocalPreview(null)
     setShowForm(true)
   }
 
@@ -187,11 +233,31 @@ export default function ProductsAdminPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>URL Hình Ảnh</Label>
+                  <Label>Hình Ảnh Đại Diện (Upload từ máy tính)</Label>
+                  {(localPreview || formData.image_url) && (
+                    <div className="relative h-32 w-32 overflow-hidden rounded-md border bg-slate-100 dark:bg-slate-800 flex items-center justify-center p-2 mb-2">
+                      <img src={localPreview || formData.image_url} alt="Cover preview" className="max-w-full max-h-full object-contain" />
+                    </div>
+                  )}
                   <Input
-                    value={formData.image_url}
-                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                    placeholder="https://example.com/image.jpg"
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => {
+                      const file = event.target.files?.[0]
+                      if (file) {
+                        uploadCoverImage(file)
+                      }
+                    }}
+                    disabled={uploadingImage}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Thẻ Alt Hình Ảnh (Mô tả ảnh cho SEO)</Label>
+                  <Input
+                    value={formData.image_alt}
+                    onChange={(e) => setFormData({ ...formData, image_alt: e.target.value })}
+                    placeholder="VD: Hình ảnh thùng carton 5 lớp in offset"
                   />
                 </div>
 
@@ -220,7 +286,8 @@ export default function ProductsAdminPage() {
                     onClick={() => {
                       setShowForm(false)
                       setEditingId(null)
-                      setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '' })
+                      setLocalPreview(null)
+                      setFormData({ name: '', category: 'tiêu_chuẩn', description: '', price: '', is_featured: false, image_url: '', image_alt: '' })
                     }}
                   >
                     Hủy
