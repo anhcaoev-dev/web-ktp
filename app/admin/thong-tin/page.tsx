@@ -109,8 +109,7 @@ export default function CompanyInfoAdminPage() {
       updateField('logo_url', data.url)
     } catch (err) {
       console.error(err)
-      setError(err instanceof Error ? err.message : 'Không thể tải ảnh lên')
-      setLocalPreview(null)
+      setError(err instanceof Error ? err.message : 'Lỗi upload ảnh: Vui lòng kiểm tra lại cấu hình Supabase Bucket')
     } finally {
       setUploadingImage(false)
     }
