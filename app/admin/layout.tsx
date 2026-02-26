@@ -34,7 +34,7 @@ export default function AdminLayout({
         { label: 'Trang chủ', href: '/admin/noi-dung/trang-chu' },
         { label: 'Sản phẩm', href: '/admin/noi-dung/san-pham' },
         { label: 'Báo giá', href: '/admin/noi-dung/bao-gia' },
-        { label: 'Thùng chuyên dụng', href: '/admin/noi-dung/thung-carton-chuyen-dung' },
+        { label: 'Thùng chuyên dụng', href: '/admin/noi-dung/thung-carton' },
         { label: 'Dịch vụ in ấn', href: '/admin/noi-dung/dich-vu-in-an' },
       ],
     },
@@ -147,8 +147,8 @@ export default function AdminLayout({
                   key={subItem.href}
                   href={subItem.href}
                   className={`block rounded-lg px-4 py-2 text-sm transition-colors ${pathname === subItem.href
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-foreground hover:bg-muted'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground hover:bg-muted'
                     }`}
                 >
                   {subItem.label}

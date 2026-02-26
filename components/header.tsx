@@ -13,7 +13,7 @@ export function Header() {
   const navLinks = [
     { label: 'Trang Chủ', href: '/' },
     { label: 'Sản Phẩm', href: '/san-pham' },
-    { label: 'Thùng Carton Chuyên Dụng', href: '/thung-carton-chuyen-dung' },
+    { label: 'Thùng Carton Chuyên Dụng', href: '/thung-carton' },
     { label: 'Dịch Vụ In Ấn', href: '/dich-vu-in-an' },
     { label: 'Về Chúng Tôi', href: '/ve-chung-toi' },
     { label: 'Tin Tức', href: '/tin-tuc-va-kien-thuc' },

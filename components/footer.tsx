@@ -67,7 +67,7 @@ export function Footer() {
             <h4 className="font-semibold mb-4">Dịch Vụ</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/thung-carton-chuyen-dung" className="hover:underline opacity-90 hover:opacity-100">
+                <Link href="/thung-carton" className="hover:underline opacity-90 hover:opacity-100">
                   Thùng Carton Chuyên Dụng
                 </Link>
               </li>

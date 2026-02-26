@@ -4,14 +4,14 @@ import { Header } from '@/components/header'
 import { Footer } from '@/components/footer'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { 
-  CheckCircle, 
-  Zap, 
-  TrendingUp, 
-  Package, 
-  Factory, 
-  Truck, 
-  Award, 
+import {
+  CheckCircle,
+  Zap,
+  TrendingUp,
+  Package,
+  Factory,
+  Truck,
+  Award,
   Users,
   FileText,
   Scissors,
@@ -50,12 +50,12 @@ export default async function Home() {
 
       {/* Hero Section */}
       <section className="relative w-full h-[600px] overflow-hidden">
-        <Image 
-          src={content.hero_image_url} 
-          alt={content.hero_image_alt} 
-          fill 
-          className="object-cover" 
-          priority 
+        <Image
+          src={content.hero_image_url}
+          alt={content.hero_image_alt}
+          fill
+          className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
         <div className="absolute inset-0 flex items-center">
@@ -95,7 +95,7 @@ export default async function Home() {
             <Link href="/bao-gia" className="hover:underline flex items-center gap-2">
               <FileText className="h-4 w-4" /> Báo giá
             </Link>
-            <Link href="/thung-carton-chuyen-dung" className="hover:underline flex items-center gap-2">
+            <Link href="/thung-carton" className="hover:underline flex items-center gap-2">
               <Factory className="h-4 w-4" /> Thùng carton chuyên dụng
             </Link>
             <Link href="/dich-vu-in-an" className="hover:underline flex items-center gap-2">
@@ -120,19 +120,19 @@ export default async function Home() {
                 {content.factory_description}
               </p>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {content.factory_images.slice(0, 4).map((img, index) => (
-                <div 
-                  key={`factory-${index}`} 
+                <div
+                  key={`factory-${index}`}
                   className="relative h-48 md:h-64 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow"
                 >
                   {img ? (
-                    <Image 
-                      src={img} 
-                      alt={`Xưởng sản xuất ${index + 1}`} 
-                      fill 
-                      className="object-cover hover:scale-105 transition-transform duration-300" 
+                    <Image
+                      src={img}
+                      alt={`Xưởng sản xuất ${index + 1}`}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full bg-muted">
@@ -175,13 +175,13 @@ export default async function Home() {
           <h2 className="text-3xl font-bold text-center text-foreground md:text-4xl mb-4">
             {content.advantages_title}
           </h2>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
             {content.advantages.map((item, index) => {
               const Icon = advantageIconMap[item.icon] || Package
               return (
-                <Card 
-                  key={`${item.title}-${index}`} 
+                <Card
+                  key={`${item.title}-${index}`}
                   className="border-border bg-card hover:shadow-lg hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
                 >
                   <CardHeader className="text-center pb-2">
@@ -219,7 +219,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {content.featured_products.map((product, index) => (
-              <Card 
+              <Card
                 key={`${product.title}-${index}`}
                 className="overflow-hidden border-border bg-card hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
               >
@@ -261,13 +261,13 @@ export default async function Home() {
                 {content.process_description}
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {content.process_steps.map((step, index) => {
                 const Icon = processIconMap[step.icon] || FileText
                 return (
-                  <div 
-                    key={`process-${index}`} 
+                  <div
+                    key={`process-${index}`}
                     className="relative text-center group"
                   >
                     <div className="relative z-10">
@@ -300,7 +300,7 @@ export default async function Home() {
               const isPrinting = service.cta_href.includes('in-an')
               const Icon = isPrinting ? Printer : Factory
               return (
-                <Card 
+                <Card
                   key={`${service.title}-${index}`}
                   className="border-border bg-card hover:shadow-lg hover:border-primary/50 transition-all duration-300"
                 >
@@ -335,16 +335,16 @@ export default async function Home() {
             <h2 className="text-3xl font-bold text-center text-foreground md:text-4xl mb-10">
               {content.customers_title}
             </h2>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
               {content.customers.map((customer, index) => (
-                <div 
+                <div
                   key={`customer-${index}`}
                   className="flex items-center justify-center h-24 rounded-lg bg-muted/50 border border-border hover:border-primary/30 hover:bg-muted transition-colors"
                 >
                   {customer.logo_url ? (
-                    <Image 
-                      src={customer.logo_url} 
+                    <Image
+                      src={customer.logo_url}
                       alt={customer.logo_alt || customer.name}
                       width={100}
                       height={50}

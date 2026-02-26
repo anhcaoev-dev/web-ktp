@@ -176,7 +176,7 @@ const DEFAULT_SERVICES: HomeServiceItem[] = [
     description:
       'Cung cấp các loại thùng carton thiết kế riêng cho nhu cầu đặc thù của nhiều ngành hàng.',
     cta_label: 'Tìm hiểu thêm',
-    cta_href: '/thung-carton-chuyen-dung',
+    cta_href: '/thung-carton',
   },
   {
     title: 'Dịch vụ in ấn',
@@ -270,8 +270,8 @@ function normalizeAdvantageItem(item: unknown, index: number): HomeAdvantageItem
   const source = typeof item === 'object' && item ? (item as Partial<HomeAdvantageItem>) : {}
   const icon = source.icon
   const validIcons: HomeAdvantageItem['icon'][] = ['package', 'trending_up', 'zap', 'check_circle', 'factory', 'truck', 'award', 'users']
-  const normalizedIcon: HomeAdvantageItem['icon'] = validIcons.includes(icon as HomeAdvantageItem['icon']) 
-    ? (icon as HomeAdvantageItem['icon']) 
+  const normalizedIcon: HomeAdvantageItem['icon'] = validIcons.includes(icon as HomeAdvantageItem['icon'])
+    ? (icon as HomeAdvantageItem['icon'])
     : fallback.icon
 
   return {
